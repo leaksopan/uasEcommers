@@ -1,0 +1,6 @@
+id,name,slug,description,image_url,is_active,created_at,updated_at
+25fbfb67-afcf-4792-a6e1-9ddabd6ac6e4,Album Foto,album-foto,Album foto berkualitas tinggi untuk menyimpan kenangan indah,/images/categories/album-foto.jpg,true,2025-06-21 02:06:21.877821+00,2025-06-21 02:06:21.877821+00
+49495107-165c-4bb1-a10d-d521875e473e,Cetak Foto,cetak-foto,Layanan cetak foto dengan berbagai ukuran dan jenis kertas premium,/images/categories/cetak-foto.jpg,true,2025-06-21 02:06:21.877821+00,2025-06-21 02:06:21.877821+00
+9ac45191-efcc-4485-b0d9-d1cd0e4db849,Frame Foto,frame-foto,Bingkai foto dengan desain elegan untuk dekorasi rumah,/images/categories/frame-foto.jpg,true,2025-06-21 02:06:21.877821+00,2025-06-21 02:06:21.877821+00
+b4b11c31-a922-4d30-a11f-b2af0c84f233,Photobox,photobox,Kotak foto custom dengan berbagai ukuran dan material berkualitas tinggi,/images/categories/photobox.jpg,true,2025-06-21 02:06:21.877821+00,2025-06-21 02:06:21.877821+00
+f22be560-7862-4a23-a69b-b8ad5e8dfd7f,Merchandise,merchandise,"Produk merchandise custom dengan foto seperti mug, kaos, dll",/images/categories/merchandise.jpg,true,2025-06-21 02:06:21.877821+00,2025-06-21 02:06:21.877821+00
