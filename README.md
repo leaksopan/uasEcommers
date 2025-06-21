@@ -60,51 +60,7 @@ const supabaseKey = "your-anon-key-here";
 
 ### 4. Setup Database Schema
 
-Buat tabel-tabel berikut di Supabase SQL Editor:
-
-```sql
--- Tabel user profiles
-CREATE TABLE user_profiles (
-  id UUID REFERENCES auth.users(id) PRIMARY KEY,
-  email TEXT UNIQUE NOT NULL,
-  full_name TEXT,
-  role TEXT DEFAULT 'customer' CHECK (role IN ('customer', 'admin')),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Tabel products
-CREATE TABLE products (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  name TEXT NOT NULL,
-  description TEXT,
-  price DECIMAL(10,2) NOT NULL,
-  images TEXT[],
-  category TEXT,
-  stock_quantity INTEGER DEFAULT 0,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Tabel cart items
-CREATE TABLE cart_items (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  user_id UUID REFERENCES auth.users(id),
-  product_id UUID REFERENCES products(id),
-  variant_id UUID,
-  quantity INTEGER DEFAULT 1,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  UNIQUE(user_id, product_id, variant_id)
-);
-
--- Tabel orders
-CREATE TABLE orders (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  user_id UUID REFERENCES auth.users(id),
-  total_amount DECIMAL(10,2) NOT NULL,
-  status TEXT DEFAULT 'pending',
-  shipping_address JSONB,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-```
+Import dari foldr database
 
 ### 5. Jalankan Aplikasi
 
