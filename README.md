@@ -1,12 +1,201 @@
-# React + Vite
+# 📸 E-Commerce Photobox Application
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplikasi e-commerce untuk layanan cetak foto dan photobox premium dengan teknologi React + Vite + Supabase.
 
-Currently, two official plugins are available:
+## ✨ Fitur Utama
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 🔐 **Authentication System** - Login/Register dengan role-based access
+- 👨‍💼 **Admin Dashboard** - Kelola produk dan pesanan
+- 🛒 **Shopping Cart** - Keranjang belanja dengan real-time update
+- 📦 **Product Management** - CRUD operations untuk produk
+- 📋 **Order Management** - Sistem manajemen pesanan
+- 📱 **Responsive Design** - UI modern dengan TailwindCSS
+- 📸 **Photo Upload** - Upload foto custom untuk photobox
+- 🗄️ **Database Integration** - Backend dengan Supabase
 
-## Expanding the ESLint configuration
+## 🛠️ Tech Stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- **Frontend**: React 19 + Vite
+- **Styling**: TailwindCSS 4.1
+- **Routing**: React Router DOM 7.6
+- **Backend**: Supabase
+- **State Management**: Context API + useReducer
+- **Authentication**: Supabase Auth
+- **Linting**: ESLint
+
+## 🚀 Cara Menjalankan
+
+### 1. Clone Repository
+
+```bash
+git clone https://github.com/leaksopan/uasEcommers.git
+cd uasEcommers
+```
+
+### 2. Install Dependencies
+
+```bash
+npm install
+```
+
+### 3. ⚠️ **PENTING: Konfigurasi Supabase**
+
+Sebelum menjalankan aplikasi, Anda **HARUS** mengubah konfigurasi Supabase:
+
+1. Buka file `src/services/supabase.js`
+2. Ganti URL dan API Key dengan milik Anda:
+
+```javascript
+// GANTI DENGAN KONFIGURASI SUPABASE ANDA
+const supabaseUrl = "https://your-project-id.supabase.co";
+const supabaseKey = "your-anon-key-here";
+```
+
+**Cara mendapatkan URL dan Key Supabase:**
+
+1. Daftar di [supabase.com](https://supabase.com)
+2. Buat project baru
+3. Di dashboard project, pilih **Settings** → **API**
+4. Copy **Project URL** dan **anon public** key
+
+### 4. Setup Database Schema
+
+Buat tabel-tabel berikut di Supabase SQL Editor:
+
+```sql
+-- Tabel user profiles
+CREATE TABLE user_profiles (
+  id UUID REFERENCES auth.users(id) PRIMARY KEY,
+  email TEXT UNIQUE NOT NULL,
+  full_name TEXT,
+  role TEXT DEFAULT 'customer' CHECK (role IN ('customer', 'admin')),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Tabel products
+CREATE TABLE products (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  name TEXT NOT NULL,
+  description TEXT,
+  price DECIMAL(10,2) NOT NULL,
+  images TEXT[],
+  category TEXT,
+  stock_quantity INTEGER DEFAULT 0,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Tabel cart items
+CREATE TABLE cart_items (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id),
+  product_id UUID REFERENCES products(id),
+  variant_id UUID,
+  quantity INTEGER DEFAULT 1,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(user_id, product_id, variant_id)
+);
+
+-- Tabel orders
+CREATE TABLE orders (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id),
+  total_amount DECIMAL(10,2) NOT NULL,
+  status TEXT DEFAULT 'pending',
+  shipping_address JSONB,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
+
+### 5. Jalankan Aplikasi
+
+```bash
+npm run dev
+```
+
+Aplikasi akan berjalan di `http://localhost:5173`
+
+## 👤 Akun Demo
+
+### Admin Account
+
+- Email: `admin@photobox.com`
+- Password: `admin123`
+
+### Customer Account
+
+- Daftar akun baru atau gunakan akun yang sudah dibuat
+
+## 📁 Struktur Project
+
+```
+src/
+├── components/
+│   ├── common/          # Komponen umum (Navigation, ProtectedRoute)
+│   └── ui/              # UI components (Button, Card, dll)
+├── contexts/            # React Context (Auth, Cart)
+├── hooks/               # Custom hooks
+├── pages/               # Halaman aplikasi
+│   ├── Admin/           # Dashboard admin
+│   ├── Auth/            # Login/Register
+│   ├── Cart/            # Keranjang belanja
+│   └── Home/            # Halaman utama
+├── services/            # API services
+│   ├── supabase.js      # ⚠️ KONFIGURASI UTAMA
+│   ├── productService.js
+│   └── adminService.js
+└── utils/               # Utility functions
+```
+
+## 🔧 Konfigurasi Penting
+
+### File yang Perlu Diubah:
+
+1. **`src/services/supabase.js`** - URL dan API Key Supabase
+2. **Database Schema** - Setup tabel di Supabase
+
+### Environment Variables (Opsional):
+
+Anda bisa membuat file `.env` untuk menyimpan konfigurasi:
+
+```env
+VITE_SUPABASE_URL=https://your-project-id.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key-here
+```
+
+Kemudian ubah `supabase.js`:
+
+```javascript
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+```
+
+## 📦 Build Production
+
+```bash
+npm run build
+```
+
+## 🤝 Contributing
+
+1. Fork repository
+2. Buat branch fitur (`git checkout -b feature/amazing-feature`)
+3. Commit perubahan (`git commit -m 'Add amazing feature'`)
+4. Push ke branch (`git push origin feature/amazing-feature`)
+5. Buat Pull Request
+
+## 📄 License
+
+Project ini dibuat untuk keperluan UAS (Ujian Akhir Semester).
+
+## ⚠️ Disclaimer
+
+**PENTING**: Aplikasi ini menggunakan konfigurasi Supabase demo. Untuk penggunaan production:
+
+1. Ganti dengan konfigurasi Supabase Anda sendiri
+2. Setup proper database schema
+3. Konfigurasi RLS (Row Level Security) policies
+4. Setup email templates untuk authentication
+
+---
+
+**Happy Coding!** 🚀
