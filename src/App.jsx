@@ -11,6 +11,7 @@ import Checkout from './pages/Checkout/Checkout'
 import AdminDashboard from './pages/Admin/AdminDashboard'
 import AdminProducts from './pages/Admin/AdminProducts'
 import AdminOrders from './pages/Admin/AdminOrders'
+import Orders from './pages/Orders/Orders'
 
 const PublicRoute = ({ children }) => {
   const { user, loading } = useAuth()
@@ -83,6 +84,14 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <Checkout />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/orders" 
+        element={
+          <ProtectedRoute>
+            <Orders />
           </ProtectedRoute>
         } 
       />

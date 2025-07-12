@@ -20,6 +20,7 @@ const Navigation = () => {
   const navigationItems = [
     { path: '/home', label: 'Beranda', icon: '🏠' },
     { path: '/catalog', label: 'Katalog', icon: '🛍️' },
+    { path: '/orders', label: 'Pesanan', icon: '📋' },
   ]
 
   const isCurrentPath = (path) => location.pathname === path

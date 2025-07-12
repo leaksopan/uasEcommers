@@ -4,6 +4,7 @@ const ProductCard = ({ product, onAddToCart, onViewDetails }) => {
   const mainImage = getMainImage(product)
   const showDiscount = hasDiscount(product)
   const discountPercentage = getDiscountPercentage(product)
+  const hasMultipleImages = product.images && product.images.length > 1
 
   const handleAddToCart = () => {
     if (onAddToCart) {
@@ -33,18 +34,31 @@ const ProductCard = ({ product, onAddToCart, onViewDetails }) => {
           alt={product.name}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           loading="lazy"
+          onError={(e) => {
+            e.target.src = 'https://via.placeholder.com/300x300?text=No+Image'
+          }}
         />
+        
+        {/* Image Count Indicator */}
+        {hasMultipleImages && (
+          <div className="absolute top-2 left-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded-md text-xs flex items-center space-x-1">
+            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+            </svg>
+            <span>{product.images.length}</span>
+          </div>
+        )}
         
         {/* Discount Badge */}
         {showDiscount && (
-          <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-md text-sm font-medium">
+          <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-md text-sm font-medium">
             -{discountPercentage}%
           </div>
         )}
 
         {/* Featured Badge */}
         {product.is_featured && (
-          <div className="absolute top-2 right-2 bg-amber-500 text-white px-2 py-1 rounded-md text-sm font-medium">
+          <div className={`absolute ${showDiscount ? 'top-12 right-2' : 'top-2 right-2'} bg-amber-500 text-white px-2 py-1 rounded-md text-sm font-medium`}>
             Unggulan
           </div>
         )}

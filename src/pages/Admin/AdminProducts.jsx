@@ -9,6 +9,7 @@ const AdminProducts = () => {
   const [showAddModal, setShowAddModal] = useState(false)
   const [editingProduct, setEditingProduct] = useState(null)
   const [deleteConfirm, setDeleteConfirm] = useState(null)
+  const [newImageUrl, setNewImageUrl] = useState('')
 
   // Form state
   const [formData, setFormData] = useState({
@@ -159,6 +160,43 @@ const AdminProducts = () => {
       is_featured: false,
       images: []
     })
+    setNewImageUrl('')
+  }
+
+  const handleAddImage = () => {
+    if (newImageUrl && !formData.images.includes(newImageUrl)) {
+      // Basic URL validation
+      try {
+        new URL(newImageUrl)
+        setFormData(prev => ({
+          ...prev,
+          images: [...prev.images, newImageUrl]
+        }))
+        setNewImageUrl('')
+      } catch (error) {
+        alert('URL gambar tidak valid. Pastikan URL dimulai dengan http:// atau https://')
+      }
+    } else if (formData.images.includes(newImageUrl)) {
+      alert('Gambar dengan URL ini sudah ditambahkan')
+    }
+  }
+
+  const handleRemoveImage = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index)
+    }))
+  }
+
+  const handleMoveImage = (fromIndex, toIndex) => {
+    const updatedImages = [...formData.images]
+    const [movedImage] = updatedImages.splice(fromIndex, 1)
+    updatedImages.splice(toIndex, 0, movedImage)
+    
+    setFormData(prev => ({
+      ...prev,
+      images: updatedImages
+    }))
   }
 
   const formatCurrency = (amount) => {
@@ -257,18 +295,35 @@ const AdminProducts = () => {
                     <tr key={product.id}>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <div>
+                          <div className="flex-shrink-0 h-12 w-12">
+                            <img
+                              className="h-12 w-12 rounded-lg object-cover border border-gray-200"
+                              src={product.images && product.images.length > 0 ? product.images[0] : 'https://via.placeholder.com/48x48?text=No+Image'}
+                              alt={product.name}
+                              onError={(e) => {
+                                e.target.src = 'https://via.placeholder.com/48x48?text=Error'
+                              }}
+                            />
+                          </div>
+                          <div className="ml-4">
                             <div className="text-sm font-medium text-gray-900">
                               {product.name}
                             </div>
                             <div className="text-sm text-gray-500">
                               SKU: {product.sku}
                             </div>
-                            {product.is_featured && (
-                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                Featured
-                              </span>
-                            )}
+                            <div className="flex items-center space-x-2 mt-1">
+                              {product.is_featured && (
+                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                  Featured
+                                </span>
+                              )}
+                              {product.images && product.images.length > 1 && (
+                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                  {product.images.length} foto
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </td>
@@ -459,6 +514,140 @@ const AdminProducts = () => {
                         </option>
                       ))}
                     </select>
+                  </div>
+                </div>
+
+                {/* Image Management Section */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Gambar Produk
+                  </label>
+                  <div className="space-y-3">
+                    {/* Current Images */}
+                    {formData.images.length > 0 && (
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        {formData.images.map((imageUrl, index) => (
+                          <div key={index} className="relative group">
+                            <img
+                              src={imageUrl}
+                              alt={`Preview ${index + 1}`}
+                              className="w-full h-24 object-cover rounded-lg border border-gray-200"
+                              onError={(e) => {
+                                e.target.src = 'https://via.placeholder.com/150x150?text=Error'
+                              }}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveImage(index)}
+                              className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              ×
+                            </button>
+                            <div className="absolute bottom-1 left-1 bg-black bg-opacity-50 text-white text-xs px-1 rounded">
+                              {index + 1}
+                              {index === 0 && (
+                                <span className="ml-1 text-yellow-400">★</span>
+                              )}
+                            </div>
+                            {/* Move buttons */}
+                            <div className="absolute bottom-1 right-1 flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                              {index > 0 && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleMoveImage(index, index - 1)}
+                                  className="bg-blue-500 text-white rounded w-5 h-5 flex items-center justify-center text-xs hover:bg-blue-600"
+                                  title="Pindah ke kiri"
+                                >
+                                  ←
+                                </button>
+                              )}
+                              {index < formData.images.length - 1 && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleMoveImage(index, index + 1)}
+                                  className="bg-blue-500 text-white rounded w-5 h-5 flex items-center justify-center text-xs hover:bg-blue-600"
+                                  title="Pindah ke kanan"
+                                >
+                                  →
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    
+                    {/* Add New Image */}
+                    <div className="flex space-x-2">
+                      <input
+                        type="url"
+                        placeholder="Masukkan URL gambar (https://...)"
+                        value={newImageUrl}
+                        onChange={(e) => setNewImageUrl(e.target.value)}
+                        onKeyPress={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault()
+                            handleAddImage()
+                          }
+                        }}
+                        className="flex-1 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleAddImage}
+                        disabled={!newImageUrl}
+                        className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                      >
+                        Tambah
+                      </button>
+                    </div>
+                    
+                    {/* Preview New Image */}
+                    {newImageUrl && (
+                      <div className="mt-2">
+                        <p className="text-sm text-gray-600 mb-1">Preview:</p>
+                        <img
+                          src={newImageUrl}
+                          alt="Preview"
+                          className="w-32 h-24 object-cover rounded-lg border border-gray-200"
+                          onError={(e) => {
+                            e.target.src = 'https://via.placeholder.com/150x150?text=Invalid+URL'
+                          }}
+                        />
+                      </div>
+                    )}
+                    
+                    {/* Quick Add Sample Images */}
+                    <div className="mt-2">
+                      <p className="text-xs text-gray-600 mb-2">Contoh gambar cepat:</p>
+                      <div className="flex flex-wrap gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setNewImageUrl('https://images.unsplash.com/photo-1584464491033-06628f3a6b7b?w=500')}
+                          className="px-2 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded text-xs"
+                        >
+                          Photobox 1
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setNewImageUrl('https://images.unsplash.com/photo-1565814329452-e1efa11c5b89?w=500')}
+                          className="px-2 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded text-xs"
+                        >
+                          Photobox 2
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setNewImageUrl('https://images.unsplash.com/photo-1584464491071-73bd85f9857b?w=500')}
+                          className="px-2 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded text-xs"
+                        >
+                          Photobox 3
+                        </button>
+                      </div>
+                    </div>
+                    
+                    <p className="text-xs text-gray-500">
+                      Gambar pertama (★) akan menjadi gambar utama produk. Gunakan tombol ← → untuk mengurutkan.
+                    </p>
                   </div>
                 </div>
 
